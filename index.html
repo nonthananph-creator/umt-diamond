@@ -15,28 +15,64 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#0B2A5B">
 <style>
-  html, body { margin: 0; height: 100%; background: #0B2A5B; }
-  #app { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #F5F8FC; }
-  #wait { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
-          color: #cfe3ff; font: 15px/1.5 -apple-system, "Sukhumvit Set", "Noto Sans Thai", sans-serif; background: #0B2A5B; transition: opacity .3s; }
-  #wait img { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
-  #wait a { color: #F2C94C; display: none; }
-  #wait.slow a { display: inline; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body { background: linear-gradient(160deg, #0B2A5B 0%, #123B7A 55%, #1A4F9C 100%); color: #fff;
+         font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Sukhumvit Set", "Noto Sans Thai", "Segoe UI", sans-serif;
+         display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px 16px; }
+  .card { width: 100%; max-width: 420px; text-align: center; }
+  .icon { width: 120px; height: 120px; border-radius: 27px; box-shadow: 0 14px 34px rgba(0,0,0,.4); }
+  h1 { font-size: 26px; margin: 18px 0 4px; }
+  .sub { color: #cfe3ff; font-size: 14px; margin: 0 0 22px; }
+  .btn { display: block; width: 100%; padding: 14px; border-radius: 14px; background: #F2C94C; color: #0B2A5B;
+         font-weight: 700; font-size: 17px; text-decoration: none; }
+  .how { margin-top: 22px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 16px;
+         padding: 14px 16px; text-align: left; font-size: 14.5px; }
+  .how b { color: #F2C94C; }
+  .how ol { margin: 6px 0 0; padding-left: 20px; }
+  .share { display: inline-block; vertical-align: -3px; width: 16px; height: 18px; }
+  .wait { display: none; color: #cfe3ff; margin-top: 10px; }
+  .standalone .how, .standalone .btn { display: none; }
+  .standalone .wait { display: block; }
 </style>
 </head>
 <body>
-<div id="wait"><img src="apple-touch-icon.png" alt=""><div>กำลังเปิดระบบทุนเพชร UMT...</div><a id="direct" href="#" target="_top">แตะที่นี่หากหน้าไม่ขึ้น</a></div>
-<iframe id="app" title="ระบบทุนเพชร UMT" allow="clipboard-write; fullscreen; autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+<div class="card">
+  <img class="icon" src="apple-touch-icon.png" alt="ทุนเพชร UMT">
+  <h1>ทุนเพชร UMT</h1>
+  <p class="sub">ระบบรับสมัครและติดตามนักศึกษาทุน “เพชร UMT”<br>คณะศึกษาศาสตร์ มหาวิทยาลัยการจัดการและเทคโนโลยีอีสเทิร์น</p>
+  <a class="btn" id="go" href="#">เปิดระบบทุนเพชร UMT</a>
+  <div class="wait">กำลังเปิดระบบ...</div>
+  <div class="how" id="how">
+    <b>เพิ่มไอคอนไว้บนหน้าจอโฮม</b>
+    <ol id="howIos">
+      <li>เปิดหน้านี้ด้วย <b>Safari</b></li>
+      <li>แตะปุ่มแชร์ <svg class="share" viewBox="0 0 16 18" fill="none" stroke="#fff" stroke-width="1.6"><path d="M8 1v11M4.5 4.5 8 1l3.5 3.5M5 7H2.5v10h11V7H11"/></svg> ด้านล่าง</li>
+      <li>เลือก <b>เพิ่มไปยังหน้าจอโฮม</b> แล้วแตะ <b>เพิ่ม</b></li>
+    </ol>
+    <ol id="howAndroid" style="display:none">
+      <li>แตะเมนู ⋮ มุมขวาบนของ Chrome</li>
+      <li>เลือก <b>เพิ่มลงในหน้าจอหลัก</b> หรือ <b>ติดตั้งแอป</b></li>
+    </ol>
+  </div>
+</div>
 <script>
-  // ★ ใส่ลิงก์ Web App ของระบบ (ลงท้ายด้วย /exec) ตรงนี้ ★
+  // ★ ลิงก์ Web App ของระบบ (ลงท้ายด้วย /exec) ★
   var APP_URL = 'https://script.google.com/macros/s/AKfycbyk6-oHS5SjI0cYYL3f2IRGjo8mJQ6iFC8WnFB5a4A4nlxelbiKTAKDNoAEvKAhLf4S/exec';
 
-  var url = APP_URL + (location.search || '');      // ส่งต่อ ?verify= / ?checkin= ถ้ามี
-  var frame = document.getElementById('app'), wait = document.getElementById('wait');
-  document.getElementById('direct').href = url;
-  frame.onload = function () { wait.style.opacity = '0'; setTimeout(function () { wait.style.display = 'none'; }, 300); };
-  setTimeout(function () { wait.className = 'slow'; }, 8000);
-  frame.src = url;
+  var url = APP_URL + (location.search || '');   // ส่งต่อ ?verify= / ?checkin= ถ้ามี
+  document.getElementById('go').href = url;
+  if (/android/i.test(navigator.userAgent)) {
+    document.getElementById('howIos').style.display = 'none';
+    document.getElementById('howAndroid').style.display = '';
+  }
+  var standalone = window.navigator.standalone === true ||
+    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  // เปิดจากไอคอนบนหน้าจอโฮม หรือมีพารามิเตอร์จาก QR → ไปที่ระบบทันที
+  if (standalone || location.search) {
+    document.documentElement.className = 'standalone';
+    location.replace(url);
+  }
 </script>
 </body>
 </html>
